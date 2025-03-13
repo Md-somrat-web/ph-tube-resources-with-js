@@ -19,7 +19,26 @@ const loadCategoryVideos = (id) => {
 
   fetch(url)
     .then((res) => res.json())
-    .then((data) => displayVideos(data.category));
+    .then((data) => {
+      const clickedButton = document.getElementById(`btn-${id}`);
+      console.log(clickedButton);
+      displayVideos(data.category);
+    });
+};
+
+const loadVideoDetails = (videoId) => {
+  console.log(videoId);
+  const url = `
+  https://openapi.programming-hero.com/api/phero-tube/videos/${videoId}
+  
+  `;
+  fetch(url)
+    .then((res) => res.json())
+    .then((data) => displayVideoDetails(data.video));
+};
+
+const displayVideoDetails = (video) => {
+  console.log(video);
 };
 
 function displayCategories(categories) {
@@ -32,17 +51,36 @@ function displayCategories(categories) {
     // create Element
     const categoryDiv = document.createElement("div");
     categoryDiv.innerHTML = `
-    <button onclick="loadCategoryVideos(${cat.category_id})" class="btn btn-sm hover:bg-[#FF1F3D] hover:text-white">${cat.category}</button>
+
+
+
+    <button id="btn-${cat.category_id}"onclick="loadCategoryVideos(${cat.category_id})" class="btn btn-sm hover:bg-[#FF1F3D] hover:text-white">${cat.category}</button>
     
     `;
     // append the Element
     categoryContainer.append(categoryDiv);
   }
 }
-
 const displayVideos = (videos) => {
   const videoContainer = document.getElementById("video-container");
   videoContainer.innerHTML = "";
+
+  if (videos.lenght == 0) {
+    videoContainer.innerHTML = `
+       <div
+        class="py-5 col-span-full flex flex-col items-center justify-center text-center"
+      >
+        <img class="w-[120px] items-center" src="Icon.png" alt="" />
+        <h1 class="text-2xl font-bold">
+          Oops!! Sorry, There is no content here
+        </h1>
+      </div>
+    
+   
+    `;
+    return;
+  }
+
   videos.forEach((video) => {
     console.log(video);
     const videoCard = document.createElement("div");
@@ -67,7 +105,7 @@ const displayVideos = (videos) => {
                 />
               </div>
             </div>
-          </div>
+          </div>  
           <div class="intro">
             <h2 class="text-sm font-semibold">Midnight Serenade</h2>
             <p class="text-sm text-gray-400 flex gap-1">
@@ -81,6 +119,7 @@ const displayVideos = (videos) => {
             <p class="text-sm text-gray-400">${video.others.views}91K views</p>
           </div>
         </div>
+        <button onclick="loadVideoDetails('${video.video_id}') class="btn btn-block">Show Details</button>
       </div>
     
   
